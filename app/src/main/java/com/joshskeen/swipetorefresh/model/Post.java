@@ -1,0 +1,36 @@
+package com.joshskeen.swipetorefresh.model;
+
+import android.content.Context;
+import android.widget.ImageView;
+
+import com.google.gson.annotations.SerializedName;
+import com.joshskeen.swipetorefresh.util.TestUtils;
+import com.squareup.picasso.Picasso;
+
+public class Post {
+
+    @SerializedName("data")
+    public PostData mPostData;
+
+    @Override
+    public String toString() {
+        return "Post{" +
+                "mPostData=" + mPostData +
+                '}';
+    }
+
+    public String getSubbreddit() {
+        return mPostData.mSubbreddit;
+    }
+
+    public void displayImage(Context context, ImageView imageView) {
+        if (mPostData.mMedia != null) {
+            mPostData.mMedia.loadImage(context, imageView);
+        } else if (TestUtils.isImage(mPostData.mUrl + "")) {
+            TestUtils.picassoInstance(context).load(mPostData.mUrl).into(imageView);
+        } else if (TestUtils.isImage(mPostData.mThumbnail + "")) {
+            TestUtils.picassoInstance(context).load(mPostData.mThumbnail).into(imageView);
+        }
+    }
+
+}
