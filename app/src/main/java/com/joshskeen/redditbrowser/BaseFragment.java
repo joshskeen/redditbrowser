@@ -7,7 +7,6 @@ import com.joshskeen.redditbrowser.inject.SwipeToRefreshApplication;
 
 public class BaseFragment extends Fragment {
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

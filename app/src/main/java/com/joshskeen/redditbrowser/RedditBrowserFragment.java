@@ -24,7 +24,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import de.greenrobot.event.EventBus;
 
-public class SwipeRefreshExampleFragment extends BaseFragment {
+public class RedditBrowserFragment extends BaseFragment {
 
     @InjectView(R.id.fragment_swipe_refresh_recycler_view)
     RecyclerView mRecyclerView;
@@ -98,9 +98,6 @@ public class SwipeRefreshExampleFragment extends BaseFragment {
     private void refreshContent() {
         mAdapter = new RedditDataRecyclerViewAdapter(getActivity(), mDataManager);
         mRecyclerView.setAdapter(mAdapter);
-
-
-
         mAdapter.notifyDataSetChanged();
         ActionBarActivity activity = (ActionBarActivity) getActivity();
         activity.setTitle(mDataManager.getSectionTitle());

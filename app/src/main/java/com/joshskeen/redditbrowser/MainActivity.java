@@ -7,7 +7,7 @@ public class MainActivity extends SingleFragmentActivity {
 
     @Override
     public Fragment createFragment() {
-        return new SwipeRefreshExampleFragment();
+        return new RedditBrowserFragment();
     }
 
     @Override

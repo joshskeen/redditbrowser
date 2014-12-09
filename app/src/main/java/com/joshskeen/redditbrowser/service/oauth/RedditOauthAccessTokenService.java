@@ -53,4 +53,7 @@ public class RedditOauthAccessTokenService {
         mRedditOauthAPI.getAsyncInstalledClientGrant(REDDIT_OAUTH_INSTALLED_CLIENT_GRANT, mDeviceId, callback);
     }
 
+    public Observable<AccessToken> rxGetAccessToken() {
+        return mRedditOauthAPI.rxGetAsyncInstalledClientGrant(REDDIT_OAUTH_INSTALLED_CLIENT_GRANT, mDeviceId);
+    }
 }
