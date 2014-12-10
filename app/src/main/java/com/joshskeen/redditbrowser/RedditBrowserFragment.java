@@ -15,7 +15,6 @@ import com.joshskeen.redditbrowser.event.PostsLoadedEvent;
 import com.joshskeen.redditbrowser.event.RetrofitErrorEvent;
 import com.joshskeen.redditbrowser.event.TokenLoadedEvent;
 import com.joshskeen.redditbrowser.service.RedditServiceManager;
-import com.joshskeen.redditbrowser.service.oauth.RedditOauthAccessTokenServiceManager;
 import com.joshskeen.redditbrowser.view.RedditDataRecyclerViewAdapter;
 
 import javax.inject.Inject;
@@ -36,8 +35,6 @@ public class RedditBrowserFragment extends BaseFragment {
     ServiceDataManager mDataManager;
     @Inject
     RedditServiceManager mRedditServiceManager;
-    @Inject
-    RedditOauthAccessTokenServiceManager mRedditOauthAccessTokenServiceManager;
 
     private RedditDataRecyclerViewAdapter mAdapter;
 
@@ -45,7 +42,7 @@ public class RedditBrowserFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState == null) {
-            mRedditServiceManager.loadTopPosts();
+//            mRedditServiceManager.loadTopPosts();
         } else {
             refreshContent();
         }
@@ -76,7 +73,7 @@ public class RedditBrowserFragment extends BaseFragment {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mRedditServiceManager.loadTopPosts();
+//                mRedditServiceManager.loadTopPosts();
             }
         });
         return inflate;
@@ -92,7 +89,7 @@ public class RedditBrowserFragment extends BaseFragment {
 
     public void onEvent(RetrofitErrorEvent event) {
         //try refreshing the token
-        mRedditOauthAccessTokenServiceManager.loadAccessToken();
+//        mRedditOauthAccessTokenServiceManager.loadAccessToken();
     }
 
     private void refreshContent() {

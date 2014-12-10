@@ -3,13 +3,13 @@ package com.joshskeen.redditbrowser;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
-import com.joshskeen.redditbrowser.inject.SwipeToRefreshApplication;
+import com.joshskeen.redditbrowser.inject.RedditBrowserApplication;
 
 public class BaseFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SwipeToRefreshApplication.get(getActivity()).inject(this);
+        RedditBrowserApplication.get(getActivity()).inject(this);
     }
 }

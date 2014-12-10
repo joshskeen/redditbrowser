@@ -9,6 +9,7 @@ import retrofit.http.POST;
 import rx.Observable;
 
 interface RedditOauthAccessTokenAPI {
+
     @FormUrlEncoded
     @POST("/access_token")
     //grant_type
@@ -22,5 +23,5 @@ interface RedditOauthAccessTokenAPI {
     @FormUrlEncoded
     @POST("/access_token")
     //grant_type
-    public Observable<AccessToken> rxGetAsyncInstalledClientGrant(@Field("grant_type") String grant, @Field("device_id") String deviceId);
+    public Observable<AccessToken> rxGetAccessToken(@Field("grant_type") String grant, @Field("device_id") String deviceId);
 }

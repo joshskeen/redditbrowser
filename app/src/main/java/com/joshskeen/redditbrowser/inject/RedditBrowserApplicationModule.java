@@ -6,22 +6,21 @@ import com.joshskeen.redditbrowser.ServiceDataManager;
 import com.joshskeen.redditbrowser.SharedPreferencesManager;
 import com.joshskeen.redditbrowser.SplashActivity;
 import com.joshskeen.redditbrowser.model.DeviceInfoManager;
-import com.joshskeen.redditbrowser.service.RedditService;
 import com.joshskeen.redditbrowser.service.RedditServiceManager;
 import com.joshskeen.redditbrowser.service.oauth.RedditOauthAccessTokenService;
-import com.joshskeen.redditbrowser.service.oauth.RedditOauthAccessTokenServiceManager;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
 
 @Module(injects = {SplashActivity.class, MainActivity.class, RedditBrowserFragment.class}, includes = {})
-public class SwipeToRefreshApplicationModule {
+public class RedditBrowserApplicationModule {
 
-    private SwipeToRefreshApplication mApplication;
+    private RedditBrowserApplication mApplication;
 
-    public SwipeToRefreshApplicationModule(SwipeToRefreshApplication application) {
+    public RedditBrowserApplicationModule(RedditBrowserApplication application) {
         mApplication = application;
     }
 
@@ -44,24 +43,19 @@ public class SwipeToRefreshApplicationModule {
     }
 
     @Provides
-    public RedditService getRedditService(ServiceDataManager serviceDataManager) {
-        return RedditService.getInstance(serviceDataManager.getAccessToken());
+    @Named("deviceId")
+    public String getDeviceId(DeviceInfoManager deviceInfoManager) {
+        return new DeviceInfoManager(mApplication).getDeviceId();
     }
 
     @Provides
-    public RedditServiceManager getRedditServiceManager(RedditService redditService, ServiceDataManager serviceDataManager) {
-        return new RedditServiceManager(redditService, serviceDataManager);
+    public RedditOauthAccessTokenService getRedditOauthAccessTokenService(ServiceDataManager serviceDataManager, @Named("deviceId") String deviceId) {
+        return RedditOauthAccessTokenService.getInstance(serviceDataManager, mApplication, deviceId);
     }
 
     @Provides
-    @Singleton
-    public RedditOauthAccessTokenServiceManager getRedditOauthAccessTokenServiceManager(
-            ServiceDataManager serviceDataManager,
-            DeviceInfoManager deviceInfoManager) {
-        String deviceId = new DeviceInfoManager(mApplication).getDeviceId();
-        RedditOauthAccessTokenService instance = RedditOauthAccessTokenService.getInstance(mApplication, deviceId);
-        return new RedditOauthAccessTokenServiceManager(instance, serviceDataManager, deviceInfoManager);
+    public RedditServiceManager getRedditServiceManager(RedditOauthAccessTokenService service, ServiceDataManager serviceDataManager) {
+        return new RedditServiceManager(service, serviceDataManager);
     }
-
 
 }

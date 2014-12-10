@@ -2,12 +2,17 @@ package com.joshskeen.redditbrowser.service.oauth;
 
 import android.content.Context;
 
+import com.joshskeen.redditbrowser.ServiceDataManager;
 import com.joshskeen.redditbrowser.model.response.AccessToken;
 import com.joshskeen.redditbrowser.util.AuthUtil;
 
 import retrofit.Callback;
+import retrofit.ErrorHandler;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import rx.Observable;
+import rx.functions.Func1;
 
 public class RedditOauthAccessTokenService {
 
@@ -16,22 +21,31 @@ public class RedditOauthAccessTokenService {
     public static final String AUTHORIZATION = "Authorization";
 
     private final String mDeviceId;
+    private ServiceDataManager mServiceDataManager;
     private Context mContext;
     private RedditOauthAccessTokenAPI mRedditOauthAPI;
 
-    private RedditOauthAccessTokenService(Context context, String deviceId, RedditOauthAccessTokenAPI redditOauthAPI) {
+    private RedditOauthAccessTokenService(ServiceDataManager serviceDataManager, Context context, String deviceId, RedditOauthAccessTokenAPI redditOauthAPI) {
         mContext = context;
         mRedditOauthAPI = redditOauthAPI;
         mDeviceId = deviceId;
+        mServiceDataManager = serviceDataManager;
     }
 
-    public static RedditOauthAccessTokenService getInstance(Context context, String deviceId) {
+    public static RedditOauthAccessTokenService getInstance(ServiceDataManager serviceDataManager, Context context, String deviceId) {
         RedditOauthAccessTokenAPI redditOauthAPI = new RestAdapter.Builder()
                 .setEndpoint(SERVICE_ENDPOINT)
                 .setRequestInterceptor(new RequestInterceptor() {
                     @Override
                     public void intercept(RequestFacade request) {
                         request.addHeader(AUTHORIZATION, AuthUtil.encodeCredentialsForOauthAccessRequest());
+                    }
+                })
+                .setErrorHandler(new ErrorHandler() {
+                    @Override
+                    public Throwable handleError(RetrofitError cause) {
+                        System.out.println("ERROR: " + cause);
+                        return cause;
                     }
                 })
                 .setLogLevel(RestAdapter.LogLevel.FULL)
@@ -42,18 +56,29 @@ public class RedditOauthAccessTokenService {
                     }
                 })
                 .build().create(RedditOauthAccessTokenAPI.class);
-        return new RedditOauthAccessTokenService(context, deviceId, redditOauthAPI);
-    }
-
-    public AccessToken getAccessToken() {
-        return mRedditOauthAPI.getInstalledClientGrant(REDDIT_OAUTH_INSTALLED_CLIENT_GRANT, mDeviceId, "permanent");
+        return new RedditOauthAccessTokenService(serviceDataManager, context, deviceId, redditOauthAPI);
     }
 
     public void asyncGetAccessToken(Callback<AccessToken> callback) {
         mRedditOauthAPI.getAsyncInstalledClientGrant(REDDIT_OAUTH_INSTALLED_CLIENT_GRANT, mDeviceId, callback);
     }
 
-    public Observable<AccessToken> rxGetAccessToken() {
-        return mRedditOauthAPI.rxGetAsyncInstalledClientGrant(REDDIT_OAUTH_INSTALLED_CLIENT_GRANT, mDeviceId);
+    public AccessToken requestAccessToken() {
+        AccessToken first = mRedditOauthAPI.rxGetAccessToken(REDDIT_OAUTH_INSTALLED_CLIENT_GRANT, mDeviceId).toBlocking().first();
+        return first;
     }
+
+    public Observable<AccessToken> rxGetAccessToken() {
+        final Observable<AccessToken> accessTokenObservable = Observable.just(mServiceDataManager.getAccessToken());
+        return accessTokenObservable.flatMap(new Func1<AccessToken, Observable<AccessToken>>() {
+            @Override
+            public Observable<AccessToken> call(AccessToken accessToken) {
+                if (accessToken != null) {
+                    return accessTokenObservable;
+                }
+                return mRedditOauthAPI.rxGetAccessToken(REDDIT_OAUTH_INSTALLED_CLIENT_GRANT, mDeviceId);
+            }
+        });
+    }
+
 }

@@ -7,6 +7,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import timber.log.Timber;
+
 
 public abstract class SingleFragmentActivity extends BaseActivity {
 
@@ -18,6 +20,7 @@ public abstract class SingleFragmentActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Timber.i("ello g?");
         setContentView(R.layout.single_fragment_activity);
         Toolbar toolbar = (Toolbar) findViewById(R.id.activity_support_toolbar);
         setSupportActionBar(toolbar);

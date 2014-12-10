@@ -1,6 +1,7 @@
 package com.joshskeen.redditbrowser;
 
-import com.joshskeen.redditbrowser.inject.SwipeToRefreshApplication;
+import android.content.Context;
+
 import com.joshskeen.redditbrowser.model.Post;
 import com.joshskeen.redditbrowser.model.response.AccessToken;
 
@@ -9,12 +10,12 @@ import java.util.List;
 public class ServiceDataManager {
 
     private List<Post> mPosts;
-    private SwipeToRefreshApplication mApplication;
+    private Context mContext;
     private SharedPreferencesManager mSharedPreferencesManager;
     private AccessToken mAccessTokenResponse;
 
-    public ServiceDataManager(SwipeToRefreshApplication application, SharedPreferencesManager sharedPreferencesManager) {
-        mApplication = application;
+    public ServiceDataManager(Context context, SharedPreferencesManager sharedPreferencesManager) {
+        mContext = context;
         mSharedPreferencesManager = sharedPreferencesManager;
     }
 
