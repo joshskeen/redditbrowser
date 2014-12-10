@@ -28,8 +28,8 @@ public class RxJavaTest {
                 TestUtils.getRandomStringOfLength(25));
         Observable<AccessToken> accessTokenObservable = service.rxGetAccessToken();
         accessTokenObservable.subscribe(accessTokenTestSubscriber);
-        accessTokenTestSubscriber.awaitTerminalEvent();
-        accessTokenTestSubscriber.assertNoErrors();
+        accessTokenTestSubscriber.awaitTerminalEvent(); //await the full execution of the Observable
+        accessTokenTestSubscriber.assertNoErrors(); //assert no unhandled errors occured during execution
     }
 
 }
