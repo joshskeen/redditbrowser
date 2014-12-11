@@ -28,6 +28,9 @@ public class TestUtils {
     }
 
     public static boolean isImage(String url) {
+        if(url == null){
+            return false;
+        }
         String regex = "http(s?)://([\\w-]+\\.)+[\\w-]+(/[\\w./]*)+\\.(?:[gG][iI][fF]|[jJ][pP][gG]|[jJ][pP][eE][gG]|[pP][nN][gG]|[bB][mM][pP])";
         Matcher m = Pattern.compile(regex).matcher(url);
         return m.find();

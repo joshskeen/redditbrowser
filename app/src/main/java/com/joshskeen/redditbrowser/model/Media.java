@@ -4,6 +4,7 @@ import android.content.Context;
 import android.widget.ImageView;
 
 import com.google.gson.annotations.SerializedName;
+import com.joshskeen.redditbrowser.util.TestUtils;
 
 public class Media {
 
@@ -16,6 +17,13 @@ public class Media {
         if (mMediaData != null) {
             mMediaData.loadImage(context, imageView);
         }
+    }
+
+    public boolean hasImage(){
+        if(mThumbnailUrl != null){
+            return TestUtils.isImage(mThumbnailUrl);
+        }
+        return mMediaData.hasImage();
     }
 
     @Override

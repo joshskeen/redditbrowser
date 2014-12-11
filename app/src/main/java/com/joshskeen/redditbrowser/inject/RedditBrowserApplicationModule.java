@@ -4,7 +4,6 @@ import com.joshskeen.redditbrowser.MainActivity;
 import com.joshskeen.redditbrowser.RedditBrowserFragment;
 import com.joshskeen.redditbrowser.ServiceDataManager;
 import com.joshskeen.redditbrowser.SharedPreferencesManager;
-import com.joshskeen.redditbrowser.SplashActivity;
 import com.joshskeen.redditbrowser.model.DeviceInfoManager;
 import com.joshskeen.redditbrowser.service.RedditServiceManager;
 import com.joshskeen.redditbrowser.service.oauth.RedditOauthAccessTokenService;
@@ -15,7 +14,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 
-@Module(injects = {SplashActivity.class, MainActivity.class, RedditBrowserFragment.class}, includes = {})
+@Module(injects = {MainActivity.class, RedditBrowserFragment.class}, includes = {})
 public class RedditBrowserApplicationModule {
 
     private RedditBrowserApplication mApplication;

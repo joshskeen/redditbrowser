@@ -23,4 +23,9 @@ public class MediaData {
                 "mThumbnailUrl='" + mThumbnailUrl + '\'' +
                 '}';
     }
+
+    public boolean hasImage() {
+        return TestUtils.isImage(mThumbnailUrl);
+    }
+
 }

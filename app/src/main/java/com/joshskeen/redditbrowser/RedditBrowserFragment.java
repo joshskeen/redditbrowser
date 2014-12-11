@@ -11,17 +11,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.joshskeen.redditbrowser.event.PostsLoadedEvent;
-import com.joshskeen.redditbrowser.event.RetrofitErrorEvent;
-import com.joshskeen.redditbrowser.event.TokenLoadedEvent;
+import com.joshskeen.redditbrowser.model.Post;
 import com.joshskeen.redditbrowser.service.RedditServiceManager;
 import com.joshskeen.redditbrowser.view.RedditDataRecyclerViewAdapter;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import de.greenrobot.event.EventBus;
+import rx.functions.Action1;
 
 public class RedditBrowserFragment extends BaseFragment {
 
@@ -32,33 +32,28 @@ public class RedditBrowserFragment extends BaseFragment {
     SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Inject
-    ServiceDataManager mDataManager;
-    @Inject
     RedditServiceManager mRedditServiceManager;
+
+    @Inject
+    ServiceDataManager mServiceDataManager;
 
     private RedditDataRecyclerViewAdapter mAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState == null) {
-//            mRedditServiceManager.loadTopPosts();
-        } else {
-            refreshContent();
-        }
-        setRetainInstance(true);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        EventBus.getDefault().register(this);
+//        EventBus.getDefault().register(this);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        EventBus.getDefault().unregister(this);
+//        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -68,36 +63,30 @@ public class RedditBrowserFragment extends BaseFragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(linearLayoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mAdapter = new RedditDataRecyclerViewAdapter(getActivity(), mDataManager);
+        mAdapter = new RedditDataRecyclerViewAdapter(getActivity(), mServiceDataManager);
         mSwipeRefreshLayout.setSize(SwipeRefreshLayout.LAYOUT_DIRECTION_RTL);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-//                mRedditServiceManager.loadTopPosts();
+                mRedditServiceManager.getTopPostsWithPicsOnly().subscribe(new Action1<List<Post>>() {
+                    @Override
+                    public void call(List<Post> posts) {
+                        mServiceDataManager.setPosts(posts);
+                        refreshContent();
+                    }
+                });
             }
         });
         return inflate;
     }
 
-    public void onEvent(PostsLoadedEvent event) {
-        refreshContent();
-    }
-
-    public void onEvent(TokenLoadedEvent event) {
-        refreshContent();
-    }
-
-    public void onEvent(RetrofitErrorEvent event) {
-        //try refreshing the token
-//        mRedditOauthAccessTokenServiceManager.loadAccessToken();
-    }
 
     private void refreshContent() {
-        mAdapter = new RedditDataRecyclerViewAdapter(getActivity(), mDataManager);
+        mAdapter = new RedditDataRecyclerViewAdapter(getActivity(), mServiceDataManager);
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
         ActionBarActivity activity = (ActionBarActivity) getActivity();
-        activity.setTitle(mDataManager.getSectionTitle());
+        activity.setTitle(mServiceDataManager.getSectionTitle());
         mSwipeRefreshLayout.setRefreshing(false);
     }
 

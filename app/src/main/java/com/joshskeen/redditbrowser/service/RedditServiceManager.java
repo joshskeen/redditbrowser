@@ -43,8 +43,42 @@ public class RedditServiceManager {
             public Observable<List<Post>> call(RedditService redditService) {
                 return redditService.rxGetRandomTopPosts();
             }
-        });
+        }).cache();
     }
+
+    public Observable<List<Post>> getTopPostsWithPicsOnly() {
+        Observable<List<Post>> listObservable = filteredTopPosts();
+        filteredTopPosts().map(new Func1<List<Post>, Observable<List<Post>>>() {
+            @Override
+            public Observable<List<Post>> call(List<Post> posts) {
+                if (posts.isEmpty()) {
+                    return getTopPostsWithPicsOnly();
+                }
+                return Observable.just(posts);
+            }
+        });
+        return listObservable;
+    }
+
+    private Observable<List<Post>> filteredTopPosts() {
+        return getTopPosts().map(new Func1<List<Post>, List<Post>>() {
+            @Override
+            public List<Post> call(List<Post> posts) {
+                return posts;
+            }
+        }).flatMap(new Func1<List<Post>, Observable<Post>>() {
+            @Override
+            public Observable<Post> call(List<Post> posts) {
+                return Observable.from(posts);
+            }
+        }).filter(new Func1<Post, Boolean>() {
+            @Override
+            public Boolean call(Post post) {
+                return post.hasImage();
+            }
+        }).toList();
+    }
+
 
     public Observable<AccessToken> getAccessTokenObservable() {
         if (mAccessTokenObservable != null) {

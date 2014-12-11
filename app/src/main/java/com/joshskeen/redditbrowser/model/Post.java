@@ -32,4 +32,13 @@ public class Post {
         }
     }
 
+    public Boolean hasImage() {
+        if(TestUtils.isImage(mPostData.mThumbnail) || TestUtils.isImage(mPostData.mUrl)){
+            return true;
+        }
+        if (mPostData.mMedia != null) {
+
+        }
+        return false;
+    }
 }
